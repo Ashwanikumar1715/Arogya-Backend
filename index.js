@@ -1,9 +1,11 @@
 const express  = require("express");
 const bodyParser = require("body-parser");
 const router = require("./routes/parent");
+const cookieParser = require("cookie-parser");
 const app = express()
 
 app.use(bodyParser.json())
+app.use(cookieParser())
 app.use('/user', router)
 
 app.post('/',(req,res)=>{
