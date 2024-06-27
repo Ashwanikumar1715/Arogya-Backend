@@ -41,22 +41,22 @@ router.post('/', async(req, res)=>{
 })
 
 router.post('/logout',(req,res)=>{
-    res.cookie('token','')
+    res.cookie('token','');
     res.json({
         message: 'You are Logged out'
     })
 })
 
 router.post('/course', (req,res)=>{
-    const { title, discription, price, img } = req.body
+    const { title, discription, price, img } = req.body;
 
     Course.create({
         title,
         price,
         discription,
         img
-    })
-    res.send('course created')
+    });
+    res.send('course created');
 })
 
 router.put('/purchase', authMiddleware, async (req,res)=>{
