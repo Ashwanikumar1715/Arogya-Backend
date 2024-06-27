@@ -1,5 +1,5 @@
 const express = require("express")
-const User = require("../db/index")
+const {User} = require("../db/index")
 
 const router = express.Router()
 

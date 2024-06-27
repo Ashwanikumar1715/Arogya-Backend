@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         minLength: 6,
-        maxLength:30
+        maxLength:300,
     },
     phoneNo : {
         type :String,
@@ -38,11 +38,11 @@ const userSchema = new mongoose.Schema({
     },
     watchlist :  [{
         type : mongoose.Schema.Types.ObjectId,
-        ref : 'course',
+        ref : 'courses',
     }],
     purchased : [ {
         type : mongoose.Schema.Types.ObjectId,
-        ref: 'course',
+        ref: 'courses',
     } ]
 })
 
@@ -54,15 +54,15 @@ userSchema.pre("save", async function(next){
     next();
 })
 
-// const courseSchema = new mongoose.Schema({
-//     title : String,
-//     price : Number,
-//     description: String,
-//     img_url: String-
-// })
+const courseSchema = new mongoose.Schema({
+    title : String,
+    price : Number,
+    description: String,
+    img_url: String
+})
 
-// const course = mongoose.model("Course", courseSchema);
-const user = mongoose.model("User" , userSchema)
+const Course = mongoose.model("Course", courseSchema);
+const User = mongoose.model("User" , userSchema)
 
-module.exports = user
+module.exports = {User, Course}
 
