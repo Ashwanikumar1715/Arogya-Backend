@@ -1,37 +1,38 @@
 const express = require("express")
 const {User} = require("../db/index")
+const zod = require("zod")
 
 const router = express.Router()
 
-router.post('/', async(req , res) => {
-    const name =  req.body.name;
-    const dob =  req.body.dob;
-    const username =  req.body.username;
-    const password =  req.body.password;
-    const phoneNo =  req.body.phoneNo;
+const signUpSchema = zod.object({
+    name: zod.string(),
+    username: zod.string(),
+    password: zod.string() 
+}) 
 
-    const x = await User.find({username:username})
+router.post('/', async(req , res) => {
+    const body = req.body
+
+    const result = signUpSchema.safeParse(body)
+
+    if (!result.success){
+        return res.status(400).send("Typo Error")
+    }
+
+    const x = await User.find({username:body.username})
     try
     {
-        let response;
         if(x.length!=0){
-            response = {
-                message: 'user already exist'
-            }
-        }
-        else{
-            User.create({
-                name : name,
-                dob : dob,
-                username : username,
-                password : password,
-                phoneNo: phoneNo
+            return res.json({
+                message: 'user already exist',
+                response: `${x}`
             })
-            response = {
-                message : `Hii ${name} you are live`
-            }
         }
-        res.send(response);
+        await User.create(body)
+        
+        res.json({
+            message : `Hii ${body.name} you are live`
+        });
     }
     catch{
         res.json({

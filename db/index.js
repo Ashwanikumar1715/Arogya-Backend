@@ -14,27 +14,22 @@ const userSchema = new mongoose.Schema({
         required: true,
         minLength: 3,
         maxLength: 50,
-    },
-    dob : {
-        type : Date,
-        required: true,
+        trim: true
     },
     username : {
         type: String,
         required: true,
         unique: true,
         minLength : 3,
-        maxLength: 20
+        maxLength: 20,
+        trim: true
     },
     password : {
         type: String,
         required: true,
         minLength: 6,
         maxLength:300,
-    },
-    phoneNo : {
-        type :String,
-        required: true,
+        trim: true
     },
     watchlist :  [{
         type : mongoose.Schema.Types.ObjectId,

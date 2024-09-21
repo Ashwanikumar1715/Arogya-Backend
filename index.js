@@ -7,7 +7,7 @@ const cors = require('cors')
 const app = express()
 
 app.use(cors({
-    origin:'http://localhost:5173', 
+    origin:process.env.client_URL, 
     credentials:true,            //access-control-allow-credentials:true
     optionSuccessStatus:200
 }));
@@ -23,5 +23,8 @@ app.post('/',(req,res)=>{
         message : `I am ${name} from ${branch} branch`
     })
 })
+app.get('/login', (req, res) => {
+    res.send('<h1>Please log in</h1><form method="post"><input type="submit" value="Login"></form>');
+});
 
 app.listen(8000)
