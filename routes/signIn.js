@@ -32,7 +32,11 @@ router.post('/', async(req, res)=>{
         
         if (user.length!=0 ){
             const token = jwt.sign(body.username, process.env.jwt_secret);
-            res.cookie("token",token);
+            res.cookie("token",token, {
+                maxAge: 24 * 60 * 60 * 1000, // Expires in 1 day
+                httpOnly: true,  // Prevents client-side JavaScript from accessing the cookie
+                secure: false    // Should be true if served over HTTPS
+              });
             res.json({
                 message: `Logged In! ${token}`,
                 sucess : true
@@ -108,7 +112,6 @@ router.get('/purchasedCourse',authMiddleware, async (req,res)=>{
         username:username
     })
     const purchasedCourse = [];
-    console.log(user.purchased.length);
     
     for (let index = 0; index < user.purchased.length; index++) {
         const course = await Course.findOne({
