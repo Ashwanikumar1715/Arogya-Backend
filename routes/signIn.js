@@ -35,7 +35,7 @@ router.post('/', async(req, res)=>{
             res.cookie("token",token, {
                 maxAge: 24 * 60 * 60 * 1000, // Expires in 1 day
                 httpOnly: true,  // Prevents client-side JavaScript from accessing the cookie
-                secure: false    // Should be true if served over HTTPS
+                secure: true    // Should be true if served over HTTPS
               });
             res.json({
                 message: `Logged In! ${token}`,
