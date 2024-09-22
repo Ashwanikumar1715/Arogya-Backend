@@ -1,18 +1,27 @@
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { User } = require('../db');
 
-const authMiddleware = (req,res,next) => {
+const authMiddleware = async(req,res,next) => {
     try{
-        const token = req.cookies.token;
-        if (!token){
-            return res.send('token not found')
+        const token=req.cookies.jwtoken;
+        console.log("tokennnn", token);
+        const verifytoken=jwt.verify(token,'hsadjakh');
+        console.log("verifytoken", verifytoken)
+        const userId = verifytoken._id; // Extract the user ID
+        const user = await User.findOne({ _id: userId });
+
+        console.log("userrrr", user)
+
+        if(!user) {
+            throw new Error("user not found");
         }
-        const username = jwt.verify(token, process.env.jwt_secret);
-        if(username){
-            next()
-        }
-        else{
-            res.status(404).send("please login");
-        }
+
+        req.token=token;
+        req.user=user;
+        req.userId=user._id;
+
+        next();
+       
     }
     catch{
         res.status(403).json({

@@ -7,47 +7,40 @@ const zod = require('zod');
 
 const router = express.Router()
 
-const loginSchema = zod.object({
-    username : zod.string().trim(),
-    password : zod.string().trim() 
-})
+
 
 router.post('/', async(req, res)=>{
-    const body = req.body;
-
-    const { success } = loginSchema.safeParse(body)
-
-    if (!success){
-        return res.status(400).json({
-            message: "typo error"
-        })
-    }
+    console.log(req.body)
+    const{username, password}=req.body;
 
     try{
-        
-        const user = await User.find({
-            username: body.username,
-        });
-        const pass = await bcrypt.compare(body.password,user[0].password);
-        
-        if (user.length!=0 ){
-            const token = jwt.sign(body.username, process.env.jwt_secret);
-            res.cookie("token",token, {
-                maxAge: 24 * 60 * 60 * 1000, // Expires in 1 day
-                httpOnly: true,  // Prevents client-side JavaScript from accessing the cookie
-                secure: true    // Should be true if served over HTTPS
-              });
-            res.json({
-                message: `Logged In! ${token}`,
-                sucess : true
-            });
+        const foundUser = await User.findOne({ username });
+        console.log("founduser", foundUser)
+
+        if (!foundUser) {
+          return res.status(400).json({ message: "User not found" });
         }
-        else{
-            res.json({
-                message: `user ${body.username} doesn't exist`,
-                sucess : false
-            })
+    
+        const isPasswordCorrect = await bcrypt.compare(
+          password,
+          foundUser.password
+        );
+        if (!isPasswordCorrect) {
+          return res.status(401).json({ message: "Wrong credentials" });
         }
+        
+        const payload = { _id: foundUser._id };
+        console.log("payload", payload)
+
+        const token = jwt.sign(payload, 'hsadjakh', {
+            expiresIn: "2d",
+          });
+          res.cookie("jwtoken",token,{
+            expires: new Date(Date.now()+25892000000),
+            httpOnly:true
+        })
+          res.status(200).json({ foundUser,token });
+       
     }
     catch{
         res.json({
@@ -126,16 +119,9 @@ router.get('/purchasedCourse',authMiddleware, async (req,res)=>{
 })
 
 router.get('/userdetail',authMiddleware, async(req,res) =>  {
-    const token = req.cookies.token
-    const username = jwt.verify(token, process.env.jwt_secret) ;
-
-    const user = await User.findOne({
-        username: username
+    console.log("reqqq",req.user)
+    res.status(200).json(req.user)
     })
-    res.json({
-        message: user
-    })
-})
 // router.get('/auth', (req,res)=>{
 //     const token = req.cookies.token;
 //     const user = jwt.decode(token, process.env.jwt_secret)
